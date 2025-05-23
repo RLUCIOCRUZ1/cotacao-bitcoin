@@ -5,7 +5,7 @@ import datetime
 import requests
 
 # Função para buscar histórico do Bitcoin em USD via CoinGecko
-def get_btc_usd_historico_coinpaprika(dias):
+def get_btc_usd_historico(dias):
     hoje = datetime.date.today()
     inicio = hoje - datetime.timedelta(days=dias)
     url = (
@@ -39,7 +39,7 @@ def get_usd_brl_historico(dias):
 def gerar_graficos(periodo):
     dias = 7 if periodo == "7 dias" else 30 if periodo == "30 dias" else 90
 
-    df_btc_usd = get_btc_usd_historico_coinpaprika(dias)
+    df_btc_usd = get_btc_usd_historico(dias)
     df_usd = get_usd_brl_historico(dias)
 
     print("BTC/USD:", df_btc_usd.shape, df_btc_usd.head())
