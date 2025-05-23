@@ -5,15 +5,23 @@ import datetime
 import requests
 
 # Função para buscar histórico do Bitcoin em USD via CoinGecko
-def get_btc_usd_historico(dias):
+def get_btc_usd_historico_coinpaprika(dias):
+    hoje = datetime.date.today()
+    inicio = hoje - datetime.timedelta(days=dias)
+    url = (
+        f"https://api.coinpaprika.com/v1/coins/btc-bitcoin/ohlcv/historical"
+        f"?start={inicio.strftime('%Y-%m-%d')}&end={hoje.strftime('%Y-%m-%d')}"
+    )
     try:
-        url = f"https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit={dias}"
-        response = requests.get(url, timeout=10)
-        data = response.json()
-        datas = [datetime.datetime.fromtimestamp(x[0] / 1000).strftime('%d/%m/%Y') for x in data]
-        valores = [float(x[4]) for x in data]  # x[4] é o preço de fechamento (close)
-        return pd.DataFrame({'Data': datas, 'Bitcoin (USD)': valores})
-    except:
+        r = requests.get(url, timeout=10)
+        data = r.json()
+        datas = [item['time_close'][:10] for item in data]
+        valores = [item['close'] for item in data]
+        df = pd.DataFrame({'Data': datas, 'Bitcoin (USD)': valores})
+        df['Data'] = pd.to_datetime(df['Data']).dt.strftime('%d/%m/%Y')
+        return df
+    except Exception as e:
+        print("Erro CoinPaprika BTCUSD:", e)
         return pd.DataFrame(columns=['Data', 'Bitcoin (USD)'])
 
 # Função para buscar histórico do Dólar via AwesomeAPI
