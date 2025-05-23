@@ -51,17 +51,18 @@ def gerar_graficos(periodo):
     df_btc_usd = get_btc_usd_historico(dias)
     df_usd = get_usd_brl_historico(dias)
 
-    print("BTC/USD:", df_btc_usd.shape, df_btc_usd.head())
-    print("USD/BRL:", df_usd.shape, df_usd.head())
-
     fig_btc_usd = go.Figure()
     if not df_btc_usd.empty:
-        fig_btc_usd.add_trace(go.Scatter(x=df_btc_usd['Data'], y=df_btc_usd['Bitcoin (USD)'], mode='lines+markers', name='BTC (USD)'))
-    fig_btc_usd.update_layout(title=f'Bitcoin (USD) - Últimos {dias} dias', xaxis_title='Data', yaxis_title='US$')
+        fig_btc_usd.add_trace(go.Scatter(x=df_btc_usd['Data'], y=df_btc_usd['Bitcoin (USD)'],
+                                         mode='lines+markers', name='BTC (USD)'))
+    fig_btc_usd.update_layout(title=f'Bitcoin (USD) - Últimos {dias} dias',
+                              xaxis_title='Data', yaxis_title='US$')
 
     fig_usd = go.Figure()
     if not df_usd.empty:
-        fig_usd.add_trace(go.Scatter(x=df_usd['Data'], y=df_usd['Dólar (USD)'], mode='lines+markers', name='USD/BRL'))
-    fig_usd.update_layout(title=f'Dólar (USD) - Últimos {dias} dias', xaxis_title='Data', yaxis_title='R$')
+        fig_usd.add_trace(go.Scatter(x=df_usd['Data'], y=df_usd['Dólar (USD)'],
+                                     mode='lines+markers', name='USD/BRL'))
+    fig_usd.update_layout(title=f'Dólar (USD) - Últimos {dias} dias',
+                          xaxis_title='Data', yaxis_title='R$')
 
     return fig_btc_usd, fig_usd
