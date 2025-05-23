@@ -6,7 +6,7 @@ from carteira import carregar_saldo, salvar_saldo
 from streamlit_autorefresh import st_autorefresh
 from datetime import datetime
 import os
-from streamlit_autorefresh import st-autorefresh
+
 
 st.set_page_config(page_title="Cotação BTC e Dólar", layout="centered")
 
