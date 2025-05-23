@@ -6,12 +6,12 @@ import requests
 
 # Função para buscar histórico do Bitcoin em USD via CoinGecko
 def get_btc_usd_historico(dias):
-    url = f"https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days={dias}"
     try:
+        url = f"https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit={dias}"
         response = requests.get(url, timeout=10)
-        data = response.json()['prices']
+        data = response.json()
         datas = [datetime.datetime.fromtimestamp(x[0] / 1000).strftime('%d/%m/%Y') for x in data]
-        valores = [x[1] for x in data]
+        valores = [float(x[4]) for x in data]  # x[4] é o preço de fechamento (close)
         return pd.DataFrame({'Data': datas, 'Bitcoin (USD)': valores})
     except:
         return pd.DataFrame(columns=['Data', 'Bitcoin (USD)'])
