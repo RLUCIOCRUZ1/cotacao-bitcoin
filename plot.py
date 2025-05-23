@@ -7,27 +7,22 @@ import streamlit as st  # necessário para visualizar dentro do app
 
 # Função para buscar histórico do Bitcoin em USD via CoinGecko
 def get_btc_usd_historico(dias):
+    url = f"https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days={dias}"
     try:
-        url = f"https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit={dias}"
-        r = requests.get(url, timeout=10)
+        response = requests.get(url, timeout=10)
+        data = response.json().get("prices", [])
 
-        st.write("📡 Status Binance:", r.status_code)
-        st.write("📨 Resposta Binance:", r.text[:300])  # Mostra apenas os 300 primeiros caracteres
+        if not data:
+            st.error("CoinGecko não retornou dados de preços.")
+            return pd.DataFrame(columns=["Data", "Bitcoin (USD)"])
 
-        data = r.json()
+        datas = [datetime.datetime.fromtimestamp(p[0] / 1000).strftime("%d/%m/%Y") for p in data]
+        valores = [p[1] for p in data]
 
-        if not data or not isinstance(data, list):
-            st.error("Resposta inválida da Binance.")
-            return pd.DataFrame(columns=['Data', 'Bitcoin (USD)'])
-
-        datas = [datetime.datetime.fromtimestamp(x[0] / 1000).strftime('%d/%m/%Y') for x in data]
-        valores = [float(x[4]) for x in data]
-        df = pd.DataFrame({'Data': datas, 'Bitcoin (USD)': valores})
-        return df
-
+        return pd.DataFrame({"Data": datas, "Bitcoin (USD)": valores})
     except Exception as e:
-        st.error(f"Erro ao buscar dados da Binance: {e}")
-        return pd.DataFrame(columns=['Data', 'Bitcoin (USD)'])
+        st.error(f"Erro ao buscar dados da CoinGecko: {e}")
+        return pd.DataFrame(columns=["Data", "Bitcoin (USD)"])
 
 # Função para buscar histórico do Dólar via AwesomeAPI
 def get_usd_brl_historico(dias):
