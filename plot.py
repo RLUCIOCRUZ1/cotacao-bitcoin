@@ -3,6 +3,7 @@ import plotly.graph_objects as go
 import pandas as pd
 import datetime
 import requests
+import streamlit as st  # necessário para visualizar dentro do app
 
 # Função para buscar histórico do Bitcoin em USD via CoinGecko
 def get_btc_usd_historico(dias):
@@ -15,13 +16,21 @@ def get_btc_usd_historico(dias):
     try:
         r = requests.get(url, timeout=10)
         data = r.json()
+
+        # Debug: verificar se dados vieram
+        st.write("📦 Dados brutos CoinPaprika:")
+        st.json(data[:3])  # mostra os 3 primeiros para teste
+
         datas = [item['time_close'][:10] for item in data]
         valores = [item['close'] for item in data]
         df = pd.DataFrame({'Data': datas, 'Bitcoin (USD)': valores})
         df['Data'] = pd.to_datetime(df['Data']).dt.strftime('%d/%m/%Y')
+        st.write("📊 DataFrame BTC/USD")
+        st.dataframe(df)
+
         return df
     except Exception as e:
-        print("Erro CoinPaprika BTCUSD:", e)
+        st.error(f"Erro ao buscar dados CoinPaprika: {e}")
         return pd.DataFrame(columns=['Data', 'Bitcoin (USD)'])
 
 # Função para buscar histórico do Dólar via AwesomeAPI
