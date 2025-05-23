@@ -7,30 +7,23 @@ import streamlit as st  # necessário para visualizar dentro do app
 
 # Função para buscar histórico do Bitcoin em USD via CoinGecko
 def get_btc_usd_historico(dias):
-    hoje = datetime.date.today()
-    inicio = hoje - datetime.timedelta(days=dias)
-    url = (
-        f"https://api.coinpaprika.com/v1/coins/btc-bitcoin/ohlcv/historical"
-        f"?start={inicio.strftime('%Y-%m-%d')}&end={hoje.strftime('%Y-%m-%d')}"
-    )
     try:
+        url = f"https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit={dias}"
         r = requests.get(url, timeout=10)
         data = r.json()
 
-        # Debug: verificar se dados vieram
-        st.write("📦 Dados brutos CoinPaprika:")
-        st.json(data[:3])  # mostra os 3 primeiros para teste
+        if not data or not isinstance(data, list):
+            st.error("Resposta inválida da Binance.")
+            return pd.DataFrame(columns=['Data', 'Bitcoin (USD)'])
 
-        datas = [item['time_close'][:10] for item in data]
-        valores = [item['close'] for item in data]
+        datas = [datetime.datetime.fromtimestamp(x[0] / 1000).strftime('%d/%m/%Y') for x in data]
+        valores = [float(x[4]) for x in data]  # x[4] = preço de fechamento
         df = pd.DataFrame({'Data': datas, 'Bitcoin (USD)': valores})
-        df['Data'] = pd.to_datetime(df['Data']).dt.strftime('%d/%m/%Y')
         st.write("📊 DataFrame BTC/USD")
         st.dataframe(df)
-
         return df
     except Exception as e:
-        st.error(f"Erro ao buscar dados CoinPaprika: {e}")
+        st.error(f"Erro ao buscar dados Binance: {e}")
         return pd.DataFrame(columns=['Data', 'Bitcoin (USD)'])
 
 # Função para buscar histórico do Dólar via AwesomeAPI
