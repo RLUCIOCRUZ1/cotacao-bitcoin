@@ -6,7 +6,7 @@ from carteira import carregar_saldo, salvar_saldo
 from streamlit_autorefresh import st_autorefresh
 from datetime import datetime
 import os
-
+import pytz
 
 st.set_page_config(page_title="Cotação BTC e Dólar", layout="centered")
 
@@ -48,8 +48,10 @@ if st.button("🔁 Atualizar agora"):
 # Atualização automática a cada 2 min
 st_autorefresh(interval=120000, key="cotacao_refresh", limit=None)
 
-# Hora da última atualização
-st.caption(f"⏱️ Última atualização: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
+fuso_brasilia = pytz.timezone("America/Sao_Paulo")
+agora_brasilia = datetime.now(fuso_brasilia)
+
+st.caption(f"⏱️ Última atualização: {agora_brasilia.strftime('%d/%m/%Y %H:%M:%S')}")
 
 # Buscar cotações
 cotacoes = get_cotacoes()
