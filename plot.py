@@ -34,6 +34,9 @@ def gerar_graficos(periodo):
     df_btc_usd = get_btc_usd_historico(dias)
     df_usd = get_usd_brl_historico(dias)
 
+    print("BTC/USD:", df_btc_usd.shape, df_btc_usd.head())
+    print("USD/BRL:", df_usd.shape, df_usd.head())
+
     fig_btc_usd = go.Figure()
     if not df_btc_usd.empty:
         fig_btc_usd.add_trace(go.Scatter(x=df_btc_usd['Data'], y=df_btc_usd['Bitcoin (USD)'], mode='lines+markers', name='BTC (USD)'))
