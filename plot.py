@@ -10,6 +10,10 @@ def get_btc_usd_historico(dias):
     try:
         url = f"https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit={dias}"
         r = requests.get(url, timeout=10)
+
+        st.write("📡 Status Binance:", r.status_code)
+        st.write("📨 Resposta Binance:", r.text[:300])  # Mostra apenas os 300 primeiros caracteres
+
         data = r.json()
 
         if not data or not isinstance(data, list):
@@ -17,13 +21,12 @@ def get_btc_usd_historico(dias):
             return pd.DataFrame(columns=['Data', 'Bitcoin (USD)'])
 
         datas = [datetime.datetime.fromtimestamp(x[0] / 1000).strftime('%d/%m/%Y') for x in data]
-        valores = [float(x[4]) for x in data]  # x[4] = preço de fechamento
+        valores = [float(x[4]) for x in data]
         df = pd.DataFrame({'Data': datas, 'Bitcoin (USD)': valores})
-        st.write("📊 DataFrame BTC/USD")
-        st.dataframe(df)
         return df
+
     except Exception as e:
-        st.error(f"Erro ao buscar dados Binance: {e}")
+        st.error(f"Erro ao buscar dados da Binance: {e}")
         return pd.DataFrame(columns=['Data', 'Bitcoin (USD)'])
 
 # Função para buscar histórico do Dólar via AwesomeAPI
